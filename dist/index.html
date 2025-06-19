@@ -372,7 +372,7 @@ body {
   const pagination = document.getElementById('pagination');
 
   function fetchAndRenderPage(pageNumber, query = '', tag = false) {
-    const url = new URL(`https://mmhentai.vercel.app/all-hqs/${pageNumber}`);
+    const url = new URL(`https://backend-cats.vercel.app/all-hqs/${pageNumber}`);
     if (query) url.searchParams.set('q', query);
     if (tag) url.searchParams.set('tag', tag);
 
