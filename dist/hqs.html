@@ -169,7 +169,7 @@
     });
 
     function carregarSugestoes(tag) {
-  fetch(`https://mmhentai.vercel.app/all-hqs/1?tag=${encodeURIComponent(tag)}`)
+  fetch(`https://backend-cats.vercel.app/all-hqs/1?tag=${encodeURIComponent(tag)}`)
     .then(response => response.json())
     .then(data => {
       const container = document.getElementById('sugestoes');
