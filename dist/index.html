@@ -1,0 +1,480 @@
+
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+  <meta charset="UTF-8">
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+
+<!-- CSS (load bootstrap from a CDN) -->
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+
+
+<title>Fofinhos - Imagens de Filhotes</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="Veja imagens de filhotes de animaiszinho">
+  <meta name="keywords" content="fofo,fofura,gatinhos,cachorrinhos,patinhos,filhotes">
+  <meta name="robots" content="index, follow">
+
+  <style>
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      background-color: #111;
+      font-family: sans-serif;
+      color: white;
+      overflow-y: scroll;
+    }
+
+    #hq-wrapper {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 10px;
+      padding: 10px;
+    }
+
+    .hq-card {
+      background-color: #222;
+      border-radius: 8px;
+      overflow: hidden;
+      text-align: center;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .hq-card img {
+      width: 100%;
+      height: auto;
+    }
+
+    .hq-card h3 {
+      padding: 10px;
+      font-size: 1em;
+    }
+
+    a {
+      text-decoration: none;
+      color: white;
+      display: flex;
+      flex-direction: column;
+      height: 100%;
+    }
+
+    #pagination {
+      text-align: center;
+      margin: 30px 0;
+    }
+
+    #pagination button {
+      padding: 8px 14px;
+      margin: 0 4px;
+      font-size: 1em;
+      background-color: #333;
+      color: white;
+      border: none;
+      border-radius: 4px;
+      cursor: pointer;
+      transition: 0.2s;
+    }
+
+    #pagination button:hover:not(:disabled) {
+      background-color: #444;
+    }
+
+    #pagination button:disabled {
+      opacity: 0.5;
+      cursor: not-allowed;
+    }
+
+    #pagination span {
+      color: #888;
+      margin: 0 6px;
+    }
+
+    @media (min-width: 768px) {
+      #hq-wrapper {
+        grid-template-columns: repeat(5, 1fr);
+        padding: 30px;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- HEAD (estilos) -->
+<style>
+  .fullscreen-overlay {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: #111;
+    z-index: 1050;
+    padding: 2rem;
+    color: white;
+    overflow-y: auto;
+  }
+
+  .fullscreen-overlay.active {
+    display: block;
+  }
+
+  .overlay-close {
+    position: absolute;
+    top: 1rem;
+    right: 1rem;
+    font-size: 2rem;
+    cursor: pointer;
+    color: white;
+  }
+
+  .overlay-content {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    margin-top: 5rem;
+    gap: 2rem;
+  }
+
+  .overlay-content form {
+    width: 100%;
+    max-width: 400px;
+  }
+
+  .overlay-tags a {
+    display: inline-block;
+    margin: 0.25rem;
+    padding: 0.4rem 0.75rem;
+    background-color: #333;
+    border-radius: 5px;
+    color: white;
+    text-decoration: none;
+  }
+
+  .overlay-tags a:hover {
+    background-color: #5a189a; /* hover roxo escuro */
+  }
+
+  .search-icon-btn {
+    background: none;
+    border: none;
+    color: white;
+    font-size: 1.5rem;
+    padding: 0.25rem 0.5rem;
+  }
+
+  @media (min-width: 576px) {
+    .search-icon-btn {
+      display: none;
+    }
+
+    #search-form-desktop .btn-primary {
+      background-color: #6f42c1;
+      border-color: #6f42c1;
+    }
+
+    #search-form-desktop .btn-primary:hover {
+      background-color: #5936a8;
+      border-color: #5936a8;
+    }
+
+    #search-form-desktop .form-control {
+      border-color: #6f42c1;
+    }
+
+    #search-form-desktop .form-control:focus {
+      border-color: #6f42c1;
+      box-shadow: 0 0 0 0.25rem rgba(111, 66, 193, 0.25);
+    }
+  }
+
+  #search-input-mobile {
+    border: 2px solid #6f42c1;
+    border-radius: 6px;
+    padding: 0.75rem;
+    font-size: 1rem;
+    width: 100%;
+  }
+
+  #search-input-mobile:focus {
+    border-color: #6f42c1 !important;
+    box-shadow: 0 0 0 0.25rem rgba(111, 66, 193, 0.5) !important;
+    outline: none;
+  }
+
+  .btn-primary {
+    background-color: #6f42c1;
+    border-color: #6f42c1;
+  }
+
+  .btn-primary:hover {
+    background-color: #5936a8;
+    border-color: #5936a8;
+  }
+
+  .pagination .page-item.active .page-link {
+    background-color: #6f42c1;
+    border-color: #6f42c1;
+  }
+
+  .pagination .page-link:focus {
+    box-shadow: 0 0 0 0.25rem rgba(111, 66, 193, 0.5);
+  }
+
+  .tag {
+    display: inline-block;
+    background-color: #6f42c1;
+    color: white;
+    padding: 0.4rem 0.75rem;
+    margin-right: 0.5rem;
+    border-radius: 20px;
+    text-decoration: none;
+    font-size: 0.85rem;
+    transition: background-color 0.2s ease-in-out;
+  }
+
+  .tag:hover {
+    background-color: #5936a8;
+    text-decoration: none;
+    color: white;
+  }
+
+  @media (min-width: 576px) {
+  .navbar .d-sm-flex a {
+    transition: background-color 0.2s, color 0.2s;
+    border-radius: 0.375rem;
+    padding: 0.4rem 0.75rem;
+  }
+
+  .navbar .d-sm-flex a:hover {
+    background-color: #6f42c1; /* roxo */
+    color: white !important;
+    text-decoration: none;
+  }
+}
+
+body {
+  font-family: 'Poppins', sans-serif;
+}
+
+</style>
+
+<nav class="navbar navbar-expand-sm navbar-dark bg-dark">
+  <div class="container-fluid">
+    <!-- LOGO + TAGS DESKTOP -->
+    <div class="d-flex align-items-center">
+      <a class="navbar-brand me-3" href="/">Logo</a>
+
+      <!-- TAGS VISÍVEIS APENAS NO DESKTOP COMO LINKS BRANCOS -->
+<div class="d-none d-sm-flex flex-wrap align-items-center">
+  <a href="/tags" class="px-2 text-white text-decoration-none">Tags</a>
+  <a href="/tag/gatinhos" class="px-2 text-white text-decoration-none">Gatinhos</a>
+  <a href="/tag/cachorrinhos" class="px-2 text-white text-decoration-none">Cachorrinhos</a>
+  <a href="/tag/patinhos" class="px-2 text-white text-decoration-none">Patinhos</a>
+</div>
+
+
+    </div>
+
+    <!-- Botão com ícone de lupa -->
+    <button class="search-icon-btn" id="openOverlay" aria-label="Pesquisar">🔍</button>
+
+    <div class="collapse navbar-collapse" id="mynavbar">
+      <ul class="navbar-nav me-auto">
+        <li class="nav-item">
+        </li>
+        <!-- outros links -->
+      </ul>
+
+      <!-- Formulário de busca visível apenas no desktop -->
+      <form class="d-flex d-none d-sm-flex" id="search-form-desktop">
+        <input class="form-control me-2" type="text" placeholder="Pesquisar por ..." id="search-input-desktop" name="q">
+        <button class="btn btn-primary" type="submit">Buscar</button>
+      </form>
+    </div>
+  </div>
+</nav>
+
+
+<!-- OVERLAY de busca e tags -->
+<div id="menuOverlay" class="fullscreen-overlay">
+  <div class="overlay-close" id="closeOverlay">&times;</div>
+  <div class="overlay-content">
+    <!-- Formulário de busca -->
+    <form id="search-form-mobile">
+      <input type="text" id="search-input-mobile" placeholder="Buscar por título ou tag..." class="form-control">
+      <button type="submit" class="btn btn-primary w-100 mt-3">Buscar</button>
+    </form>
+
+    <!-- Tags populares -->
+    <div class="text-center">
+      <h5>Tags populares</h5>
+      <div class="overlay-tags">
+        <a href="/tags">Tags</a>
+        <a href="/tag/gatinhos">Gatinhos</a>
+        <a href="/tag/cachorrinhos">Cachorrinhos</a>
+        <a href="/tag/patinhos">Patinhos</a>
+      </div>
+    </div>
+
+    <!-- Contato -->
+    <div class="text-center mt-4">
+      <h5>Contato</h5>
+      <p>Email: marcelo.a.muniz01@gmail.com</p>
+    </div>
+  </div>
+</div>
+
+<!-- JS para abrir/fechar overlay + busca -->
+<script>
+  const overlay = document.getElementById('menuOverlay');
+  const openBtn = document.getElementById('openOverlay');
+  const closeBtn = document.getElementById('closeOverlay');
+
+  openBtn.addEventListener('click', () => overlay.classList.add('active'));
+  closeBtn.addEventListener('click', () => overlay.classList.remove('active'));
+
+  document.getElementById('search-form-mobile').addEventListener('submit', function (e) {
+    e.preventDefault();
+    const query = document.getElementById('search-input-mobile').value.trim();
+    if (query) {
+      window.location.href = `/?q=${encodeURIComponent(query)}&page=1`;
+    }
+  });
+
+  document.getElementById('search-form-desktop').addEventListener('submit', function (e) {
+    e.preventDefault();
+    const query = document.getElementById('search-input-desktop').value.trim();
+    if (query) {
+      window.location.href = `/?q=${encodeURIComponent(query)}&page=1`;
+    }
+  });
+</script>
+
+
+  <div id="hq-wrapper"></div>
+  <div id="pagination"></div>
+
+  <script>
+  let currentPage = 1;
+  let totalPages = 1;
+  let currentQuery = '';
+  let currentTag = '';
+
+  const wrapper = document.getElementById('hq-wrapper');
+  const pagination = document.getElementById('pagination');
+
+  function fetchAndRenderPage(pageNumber, query = '', tag = false) {
+    const url = new URL(`https://mmhentai.vercel.app/all-hqs/${pageNumber}`);
+    if (query) url.searchParams.set('q', query);
+    if (tag) url.searchParams.set('tag', tag);
+
+    fetch(url)
+      .then(res => res.json())
+      .then(data => {
+        if (data.message === 'HQs não encontradas') {
+          wrapper.innerHTML = '<p style="text-align: center; margin-top: 40px;">Nenhuma HQ encontrada.</p>';
+          pagination.innerHTML = '';
+          updateUrl(pageNumber, query, tag);
+          return;
+        }
+
+        if (!data || !data.hqs) return;
+
+        currentPage = pageNumber;
+        currentQuery = query;
+        currentTag = tag;
+        totalPages = Math.ceil(data.total / 20);
+        renderPage(data.hqs);
+        renderPagination();
+      })
+      .catch(err => {
+        console.error('Erro ao carregar HQs:', err);
+        wrapper.innerHTML = '<p style="text-align: center; margin-top: 40px; color: red;">Erro ao carregar os dados.</p>';
+        pagination.innerHTML = '';
+      });
+  }
+
+  function updateUrl(page, query, tag) {
+    const params = new URLSearchParams();
+    params.set('page', page);
+    if (query) params.set('q', query);
+    if (tag) params.set('tag', tag);
+    history.pushState({}, '', '?' + params.toString());
+  }
+
+  function renderPage(hqs) {
+    wrapper.innerHTML = '';
+    hqs.forEach(hq => {
+      const card = document.createElement('div');
+      card.className = 'hq-card';
+      card.innerHTML = `
+        <a href="/hqs/${hq.urlAmigavel}">
+          <img src="${hq.urlCapa}" alt="${hq.titulo}">
+          <h3>${hq.titulo}</h3>
+        </a>
+      `;
+      wrapper.appendChild(card);
+    });
+
+    updateUrl(currentPage, currentQuery, currentTag);
+  }
+
+  function renderPagination() {
+    pagination.innerHTML = '';
+
+    const createButton = (label, page, disabled = false, active = false) => {
+      const btn = document.createElement('button');
+      btn.textContent = label;
+      if (active) {
+        btn.style.backgroundColor = '#555';
+        btn.style.fontWeight = 'bold';
+      }
+      btn.disabled = disabled;
+      btn.onclick = () => {
+        fetchAndRenderPage(page, currentQuery, currentTag);
+      };
+      return btn;
+    };
+
+    pagination.appendChild(createButton('Anterior', currentPage - 1, currentPage === 1));
+
+    if (totalPages <= 5) {
+      for (let i = 1; i <= totalPages; i++) {
+        pagination.appendChild(createButton(i, i, false, i === currentPage));
+      }
+    } else {
+      pagination.appendChild(createButton(1, 1));
+      if (currentPage > 3) pagination.appendChild(document.createTextNode('...'));
+
+      for (let i = Math.max(2, currentPage - 1); i <= Math.min(totalPages - 1, currentPage + 1); i++) {
+        pagination.appendChild(createButton(i, i, false, i === currentPage));
+      }
+
+      if (currentPage < totalPages - 2) pagination.appendChild(document.createTextNode('...'));
+
+      pagination.appendChild(createButton(totalPages, totalPages, false, currentPage === totalPages));
+    }
+
+    pagination.appendChild(createButton('Próxima', currentPage + 1, currentPage === totalPages));
+  }
+
+  window.addEventListener('DOMContentLoaded', () => {
+    const params = new URLSearchParams(window.location.search);
+    const pageFromUrl = parseInt(params.get('page')) || 1;
+    const queryFromUrl = params.get('q') || '';
+    const tagFromUrl = params.get('tag') || '';
+    fetchAndRenderPage(pageFromUrl, queryFromUrl, tagFromUrl);
+  });
+</script>
+
+
+</body>
+</html>
