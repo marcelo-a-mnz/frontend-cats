@@ -1,0 +1,490 @@
+<html>
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  <!-- CSS (load bootstrap from a CDN) -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+
+  <title>Fofinhos - Imagens de Filhotes</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="Veja imagens de filhotes de animaiszinho">
+  <meta name="keywords" content="fofo,fofura,gatinhos,cachorrinhos,patinhos,filhotes">
+  <meta name="robots" content="index, follow">
+
+
+  <style>
+    #imagens img {
+      width: 100%;
+      height: auto;
+      margin-bottom: 0.5rem;
+      border-radius: 8px;
+    }
+
+    @media (min-width: 768px) {
+      #imagens img {
+        margin-left: auto;
+        margin-right: auto;
+        display: block;
+        margin-bottom: 0.75rem;
+      }
+    }
+
+    #informacoes,
+    .sugestoes-wrapper {
+      background-color: #2a2a2a;
+      padding: 20px;
+      border-radius: 12px;
+      margin-bottom: 3rem;
+    }
+
+    #sugestoes {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+      gap: 16px;
+    }
+
+    .sugestao-card {
+      width: 140px;
+      position: relative;
+      text-decoration: none;
+    }
+
+    .sugestao-card img {
+      width: 100%;
+      height: auto;
+      border-radius: 5px;
+      display: block;
+    }
+
+    .sugestao-titulo {
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      background-color: rgba(0, 0, 0, 0.6);
+      color: white;
+      font-size: 0.85rem;
+      padding: 6px;
+      text-align: center;
+      border-radius: 0 0 5px 5px;
+    }
+
+    @media (min-width: 992px) {
+      #sugestoes {
+        display: grid;
+        grid-template-columns: repeat(5, 1fr);
+        gap: 20px;
+        justify-content: center;
+      }
+
+      .sugestao-card {
+        width: 110%;
+        background-color: #3a3a3a;
+        padding: 8px;
+        border-radius: 8px;
+        transition: background-color 0.2s;
+      }
+
+      .sugestao-card:hover {
+        background-color: #5e3a7f;
+      }
+    }
+
+    .tag {
+      display: inline-block;
+      background-color: #6f42c1;
+      color: white !important;
+      padding: 0.4rem 0.75rem;
+      margin: 0.3rem 0.3rem 0 0;
+      border-radius: 20px;
+      text-decoration: none;
+      font-size: 0.85rem;
+      transition: background-color 0.2s ease-in-out;
+    }
+
+    .tag:hover {
+      background-color: #5936a8;
+      text-decoration: none;
+      color: white !important;
+    }
+
+    #tags {
+      margin-top: 0.5rem;
+      margin-bottom: 1rem;
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.4rem;
+    }
+  </style>
+
+  <script>
+    document.addEventListener('DOMContentLoaded', function () {
+      const urlAmigavel = window.location.pathname.split("/").pop();
+
+      // Buscar dados da HQ
+      fetch(`https://fofinhos.vercel.app/hq-infos/${urlAmigavel}`)
+        .then(response => response.json())
+        .then(data => {
+          document.getElementById('titulo').innerText = data.titulo;
+          document.title = data.titulo;
+          document.getElementById('resumo').innerText = data.resumo;
+
+          const tagsDiv = document.getElementById('tags');
+          tagsDiv.innerHTML = '';
+	  let tags = data.tags.split(',');
+	  let tagsAmigaveis = data.tagsAmigaveis.split(',');
+	  for (let n in tags) {
+		  const tagElement = document.createElement('a');
+		  tagElement.href = `/tag/${tagsAmigaveis[n]}`;
+		  tagElement.rel = 'tag';
+		  tagElement.classList.add('tag');
+		  tagElement.innerText = tags[n];
+		  tagsDiv.appendChild(tagElement);
+	  }
+
+          const imagensDiv = document.getElementById('imagens');
+          imagensDiv.innerHTML = '';
+          data.imagens.forEach(imgUrl => {
+            const imgElement = document.createElement('img');
+            imgElement.src = imgUrl;
+            imgElement.setAttribute('alt', data.titulo);
+            imgElement.classList.add('img-fluid', 'align-center', 'img-hq');
+            imagensDiv.appendChild(imgElement);
+            imagensDiv.appendChild(document.createElement('br'));
+          });
+
+          document.getElementById('paginas-qtd').innerText = `Páginas: ${data.qtd}`;
+          // Obter uma tag aleatória da HQ
+					const tagsArray = data.tags.split(',').map(tag => tag.trim()).filter(tag => tag.length > 0);
+					const tagAleatoria = tagsArray[Math.floor(Math.random() * tagsArray.length)];
+					carregarSugestoes(tagAleatoria);
+
+        })
+        .catch(error => {
+          console.error('Erro ao buscar dados do backend:', error);
+        });
+    });
+
+    function carregarSugestoes(tag) {
+  fetch(`https://mmhentai.vercel.app/all-hqs/1?tag=${encodeURIComponent(tag)}`)
+    .then(response => response.json())
+    .then(data => {
+      const container = document.getElementById('sugestoes');
+      if (!data || !data.hqs || data.hqs.length === 0) {
+        container.innerHTML = '<p class="text-light">Nenhuma sugestão encontrada.</p>';
+        return;
+      }
+
+      const escolhidas = data.hqs.sort(() => 0.5 - Math.random()).slice(0, 10);
+      escolhidas.forEach(hq => {
+        const link = document.createElement('a');
+        link.href = `/hqs/${hq.urlAmigavel}`;
+        link.classList.add('sugestao-card');
+
+        const img = document.createElement('img');
+        img.src = hq.urlCapa;
+        img.alt = hq.titulo;
+
+        const overlay = document.createElement('div');
+        overlay.classList.add('sugestao-titulo');
+        overlay.innerText = hq.titulo;
+
+        link.appendChild(img);
+        link.appendChild(overlay);
+        container.appendChild(link);
+      });
+    })
+    .catch(error => {
+      console.error('Erro ao carregar sugestões:', error);
+    });
+}
+
+  </script>
+</head>
+
+<body class="container bg-dark">
+  <header>
+    <!-- HEAD (estilos) -->
+<style>
+  .fullscreen-overlay {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: #111;
+    z-index: 1050;
+    padding: 2rem;
+    color: white;
+    overflow-y: auto;
+  }
+
+  .fullscreen-overlay.active {
+    display: block;
+  }
+
+  .overlay-close {
+    position: absolute;
+    top: 1rem;
+    right: 1rem;
+    font-size: 2rem;
+    cursor: pointer;
+    color: white;
+  }
+
+  .overlay-content {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    margin-top: 5rem;
+    gap: 2rem;
+  }
+
+  .overlay-content form {
+    width: 100%;
+    max-width: 400px;
+  }
+
+  .overlay-tags a {
+    display: inline-block;
+    margin: 0.25rem;
+    padding: 0.4rem 0.75rem;
+    background-color: #333;
+    border-radius: 5px;
+    color: white;
+    text-decoration: none;
+  }
+
+  .overlay-tags a:hover {
+    background-color: #5a189a; /* hover roxo escuro */
+  }
+
+  .search-icon-btn {
+    background: none;
+    border: none;
+    color: white;
+    font-size: 1.5rem;
+    padding: 0.25rem 0.5rem;
+  }
+
+  @media (min-width: 576px) {
+    .search-icon-btn {
+      display: none;
+    }
+
+    #search-form-desktop .btn-primary {
+      background-color: #6f42c1;
+      border-color: #6f42c1;
+    }
+
+    #search-form-desktop .btn-primary:hover {
+      background-color: #5936a8;
+      border-color: #5936a8;
+    }
+
+    #search-form-desktop .form-control {
+      border-color: #6f42c1;
+    }
+
+    #search-form-desktop .form-control:focus {
+      border-color: #6f42c1;
+      box-shadow: 0 0 0 0.25rem rgba(111, 66, 193, 0.25);
+    }
+  }
+
+  #search-input-mobile {
+    border: 2px solid #6f42c1;
+    border-radius: 6px;
+    padding: 0.75rem;
+    font-size: 1rem;
+    width: 100%;
+  }
+
+  #search-input-mobile:focus {
+    border-color: #6f42c1 !important;
+    box-shadow: 0 0 0 0.25rem rgba(111, 66, 193, 0.5) !important;
+    outline: none;
+  }
+
+  .btn-primary {
+    background-color: #6f42c1;
+    border-color: #6f42c1;
+  }
+
+  .btn-primary:hover {
+    background-color: #5936a8;
+    border-color: #5936a8;
+  }
+
+  .pagination .page-item.active .page-link {
+    background-color: #6f42c1;
+    border-color: #6f42c1;
+  }
+
+  .pagination .page-link:focus {
+    box-shadow: 0 0 0 0.25rem rgba(111, 66, 193, 0.5);
+  }
+
+  .tag {
+    display: inline-block;
+    background-color: #6f42c1;
+    color: white;
+    padding: 0.4rem 0.75rem;
+    margin-right: 0.5rem;
+    border-radius: 20px;
+    text-decoration: none;
+    font-size: 0.85rem;
+    transition: background-color 0.2s ease-in-out;
+  }
+
+  .tag:hover {
+    background-color: #5936a8;
+    text-decoration: none;
+    color: white;
+  }
+
+  @media (min-width: 576px) {
+  .navbar .d-sm-flex a {
+    transition: background-color 0.2s, color 0.2s;
+    border-radius: 0.375rem;
+    padding: 0.4rem 0.75rem;
+  }
+
+  .navbar .d-sm-flex a:hover {
+    background-color: #6f42c1; /* roxo */
+    color: white !important;
+    text-decoration: none;
+  }
+}
+
+body {
+  font-family: 'Poppins', sans-serif;
+}
+
+</style>
+
+<nav class="navbar navbar-expand-sm navbar-dark bg-dark">
+  <div class="container-fluid">
+    <!-- LOGO + TAGS DESKTOP -->
+    <div class="d-flex align-items-center">
+      <a class="navbar-brand me-3" href="/">Logo</a>
+
+      <!-- TAGS VISÍVEIS APENAS NO DESKTOP COMO LINKS BRANCOS -->
+<div class="d-none d-sm-flex flex-wrap align-items-center">
+  <a href="/tags" class="px-2 text-white text-decoration-none">Tags</a>
+  <a href="/tag/gatinhos" class="px-2 text-white text-decoration-none">Gatinhos</a>
+  <a href="/tag/cachorrinhos" class="px-2 text-white text-decoration-none">Cachorrinhos</a>
+  <a href="/tag/patinhos" class="px-2 text-white text-decoration-none">Patinhos</a>
+</div>
+
+
+    </div>
+
+    <!-- Botão com ícone de lupa -->
+    <button class="search-icon-btn" id="openOverlay" aria-label="Pesquisar">🔍</button>
+
+    <div class="collapse navbar-collapse" id="mynavbar">
+      <ul class="navbar-nav me-auto">
+        <li class="nav-item">
+        </li>
+        <!-- outros links -->
+      </ul>
+
+      <!-- Formulário de busca visível apenas no desktop -->
+      <form class="d-flex d-none d-sm-flex" id="search-form-desktop">
+        <input class="form-control me-2" type="text" placeholder="Pesquisar por ..." id="search-input-desktop" name="q">
+        <button class="btn btn-primary" type="submit">Buscar</button>
+      </form>
+    </div>
+  </div>
+</nav>
+
+
+<!-- OVERLAY de busca e tags -->
+<div id="menuOverlay" class="fullscreen-overlay">
+  <div class="overlay-close" id="closeOverlay">&times;</div>
+  <div class="overlay-content">
+    <!-- Formulário de busca -->
+    <form id="search-form-mobile">
+      <input type="text" id="search-input-mobile" placeholder="Buscar por título ou tag..." class="form-control">
+      <button type="submit" class="btn btn-primary w-100 mt-3">Buscar</button>
+    </form>
+
+    <!-- Tags populares -->
+    <div class="text-center">
+      <h5>Tags populares</h5>
+      <div class="overlay-tags">
+        <a href="/tags">Tags</a>
+        <a href="/tag/gatinhos">Gatinhos</a>
+        <a href="/tag/cachorrinhos">Cachorrinhos</a>
+        <a href="/tag/patinhos">Patinhos</a>
+      </div>
+    </div>
+
+    <!-- Contato -->
+    <div class="text-center mt-4">
+      <h5>Contato</h5>
+      <p>Email: marcelo.a.muniz01@gmail.com</p>
+    </div>
+  </div>
+</div>
+
+<!-- JS para abrir/fechar overlay + busca -->
+<script>
+  const overlay = document.getElementById('menuOverlay');
+  const openBtn = document.getElementById('openOverlay');
+  const closeBtn = document.getElementById('closeOverlay');
+
+  openBtn.addEventListener('click', () => overlay.classList.add('active'));
+  closeBtn.addEventListener('click', () => overlay.classList.remove('active'));
+
+  document.getElementById('search-form-mobile').addEventListener('submit', function (e) {
+    e.preventDefault();
+    const query = document.getElementById('search-input-mobile').value.trim();
+    if (query) {
+      window.location.href = `/?q=${encodeURIComponent(query)}&page=1`;
+    }
+  });
+
+  document.getElementById('search-form-desktop').addEventListener('submit', function (e) {
+    e.preventDefault();
+    const query = document.getElementById('search-input-desktop').value.trim();
+    if (query) {
+      window.location.href = `/?q=${encodeURIComponent(query)}&page=1`;
+    }
+  });
+</script>
+
+  </header>
+
+  <main>
+    <div id="corpo" class="container align-center">
+      <div id="informacoes" class="mb-4">
+        <h2 id="titulo" class="text-light"></h2>
+
+        <strong class="text-light"> Tags: </strong>
+        <div id="tags"></div>
+
+        <h6 id="paginas-qtd" class="text-light">Páginas:</h4>
+
+        <p id="resumo" class="text-light"></p>
+      </div>
+
+      <div id="imagens"></div>
+
+      <h4 class="text-light mt-5 justify-content-center text-center">Você também vai gostar:</h4>
+      <div class="sugestoes-wrapper">
+        <div id="sugestoes"></div>
+      </div>
+    </div>
+  </main>
+
+  <footer>
+    <p class="text-center text-light">© Copyright 2025 Fofinhos | Imagens de Filhotes</p>
+  </footer>
+</body>
+</html>
